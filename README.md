@@ -8,7 +8,7 @@ This repository only hosts the installable Android app **My Shifts**. The source
 2. Download **MyShifts.apk** and open it. If Android asks, allow your browser to install unknown apps.
 3. Updates install over the old version and keep your calendar link and settings.
 
-From version 6.6 the app checks this repository itself and offers new versions inside the app (menu → About). Automatic installation can be switched on in the menu.
+From version 7.0 the app checks this repository itself and offers new versions inside the app (menu → About). Automatic installation can be switched on in the menu.
 
 ## Verify a download
 
