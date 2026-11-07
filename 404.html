@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#0d47a1" />
+    <title>My Shifts has moved</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+        box-sizing: border-box;
+        background: #275ea7;
+        color: #fff;
+      }
+      main {
+        max-width: 420px;
+        text-align: center;
+      }
+      h1 {
+        font-size: 26px;
+        margin: 0 0 12px;
+      }
+      p {
+        line-height: 1.5;
+        margin: 0 0 14px;
+      }
+      ol {
+        text-align: left;
+        line-height: 1.5;
+        padding-left: 22px;
+        margin: 0 0 22px;
+      }
+      a.button {
+        display: inline-block;
+        background: #fff;
+        color: #0d47a1;
+        font-weight: 700;
+        text-decoration: none;
+        border-radius: 99px;
+        padding: 14px 26px;
+      }
+      .status {
+        font-size: 13px;
+        opacity: 0.8;
+        margin-top: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>My Shifts has moved</h1>
+      <p>This old address is closed. My Shifts now lives at <strong>shifts.ra-lab.ch</strong>.</p>
+      <ol>
+        <li>Open the new address below in Safari.</li>
+        <li>Add it to your home screen (Share → “Add to Home Screen”).</li>
+        <li>Paste your calendar link again and turn reminders back on.</li>
+        <li>Delete the old My Shifts icon from your home screen.</li>
+      </ol>
+      <a class="button" href="https://shifts.ra-lab.ch/" rel="noreferrer">Open My Shifts</a>
+      <p class="status" id="status" role="status">Removing the old copy from this phone…</p>
+      <noscript><p class="status">Open the new address with the button above.</p></noscript>
+    </main>
+    <script>
+      // Removes everything the retired mirror kept on this phone — the
+      // calendar link included — and nothing else: ara-brrr.github.io is
+      // shared by every Pages site of the account, so only this app's own
+      // keys ("shifts."), database ("my-shifts"), caches and service worker
+      // (scope /My-Shift-Public/) are touched.
+      ;(async () => {
+        const SCOPE_PATH = '/My-Shift-Public/'
+        try {
+          for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i)
+            if (key !== null && key.startsWith('shifts.')) localStorage.removeItem(key)
+          }
+        } catch (e) {}
+        try {
+          indexedDB.deleteDatabase('my-shifts')
+        } catch (e) {}
+        try {
+          if ('caches' in window) {
+            const scope = location.origin + SCOPE_PATH
+            for (const name of await caches.keys()) if (name.endsWith(scope)) await caches.delete(name)
+          }
+        } catch (e) {}
+        try {
+          if ('serviceWorker' in navigator) {
+            for (const registration of await navigator.serviceWorker.getRegistrations()) {
+              if (new URL(registration.scope).pathname.startsWith(SCOPE_PATH)) await registration.unregister()
+            }
+          }
+        } catch (e) {}
+        document.getElementById('status').textContent = 'The old copy and your calendar link are removed from this address.'
+        // In a browser tab, go on to the new address. Not in the old
+        // home-screen app: there the steps above matter more.
+        const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true
+        if (!standalone) setTimeout(() => location.replace('https://shifts.ra-lab.ch/'), 6000)
+      })()
+    </script>
+  </body>
+</html>
